@@ -1,4 +1,4 @@
-# L-PRPG-
+# TinyShop
 # ✏️feat: 00 기능 추가
 
 - 추가사항
