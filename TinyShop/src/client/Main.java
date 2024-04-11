@@ -27,6 +27,7 @@ public class Main { // Main 클래스 시작
 
                 System.out.print("서버로 보낼 문자열을 입력하고 엔터키를 치세요: "); // 서버로 보낼 문자열 입력 안내 메시지 출력
                 msg = sc.nextLine(); // 사용자로부터 문자열 입력 받음
+
                 if (msg.equalsIgnoreCase("quit")) { // 만약 메시지가 "quit"이면
                     out.println(msg); // 메시지를 서버에 전송
                     out.flush(); // 버퍼 비우기
@@ -35,6 +36,8 @@ public class Main { // Main 클래스 시작
 
 
                 out.println(msg); // 메시지를 서버에 전송
+                System.out.println(msg);
+
                 out.flush(); // 버퍼 비우기
                 msg = in.readLine(); // 서버로부터 메시지 읽기
                 System.out.println("서버로부터 온 메시지: " + msg); // 서버로부터 받은 메시지 출력
