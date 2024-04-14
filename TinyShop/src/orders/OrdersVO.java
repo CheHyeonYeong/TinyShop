@@ -1,5 +1,5 @@
 package orders;
-
+//
 public class OrdersVO {
 
     //- 주문 생성: 주문 생성 시 고객과 해당 음식의 정보 (이름, 수량 포함)
