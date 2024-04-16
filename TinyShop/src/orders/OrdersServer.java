@@ -23,7 +23,7 @@ public class OrdersServer {
 
         try {
             // 서버 소켓 생성 및 포트 바인딩
-            serverSocket = new ServerSocket(3306);
+            serverSocket = new ServerSocket(3018);
             System.out.println("연결을 기다리고 있습니다");
             clientSocket = serverSocket.accept(); // 클라이언트 연결 수락
             out = new PrintWriter(clientSocket.getOutputStream()); // 클라이언트로 데이터 전송

@@ -5,6 +5,7 @@ public class OrdersVO {
     //- 주문 생성: 주문 생성 시 고객과 해당 음식의 정보 (이름, 수량 포함)
     //고객 ID
     private int id;
+    private String customerName;
     //음식 이름
     private String foodName;
     //음식의 수량
@@ -14,10 +15,11 @@ public class OrdersVO {
     public OrdersVO(){}
 
     //필드생성자
-    public OrdersVO(int id, String foodName, int quantity) {
+    public OrdersVO(int id,String customerName ,String foodName, int quantity) {
         this.id = id;
         this.foodName = foodName;
         this.quantity = quantity;
+        this.customerName = customerName;
     }
 
 
@@ -41,4 +43,11 @@ public class OrdersVO {
         this.quantity = quantity;
     }
 
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
 }

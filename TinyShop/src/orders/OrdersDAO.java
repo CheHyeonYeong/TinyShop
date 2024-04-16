@@ -12,7 +12,7 @@ public class OrdersDAO {
 
     //MySQL 쿼리문을 상수로 정의
     //주문
-    private static final String INSERT_ORDER = "INSERT INTO orders (customer_name, food_name, quantity) VALUES (?, ?, ?)";
+    private static final String INSERT_ORDER = "INSERT INTO orders (id, customer_name, food_name, quantity) VALUES (?, ?, ?)";
     //주문 조회문
     private static final String SELECT_ALL_ORDERS = "SELECT * FROM orders";
     //주문 수정문
@@ -30,7 +30,6 @@ public class OrdersDAO {
 
 
 
-    // 주문 생성 메서드
     public void createOrder(OrdersVO ordersvo) {
         // 데이터베이스 연결 및 PreparedStatement 생성
         try (Connection conn = getConnection();
@@ -56,6 +55,7 @@ public class OrdersDAO {
             while (rs.next()) {
                 OrdersVO ordersvo = new OrdersVO();
                 ordersvo.setId(rs.getInt("id"));
+                ordersvo.setCustomerName(rs.getString("customer_name"));
                 ordersvo.setFoodName(rs.getString("food_name"));
                 ordersvo.setQuantity(rs.getInt("quantity"));
                 orders.add(ordersvo);
@@ -75,6 +75,7 @@ public class OrdersDAO {
             while (rs.next()) {
                 OrdersVO ordersvo = new OrdersVO();
                 ordersvo.setId(rs.getInt("id"));
+                ordersvo.setCustomerName(rs.getString("customer_name"));
                 ordersvo.setFoodName(rs.getString("food_name"));
                 ordersvo.setQuantity(rs.getInt("quantity"));
                 orders.add(ordersvo);

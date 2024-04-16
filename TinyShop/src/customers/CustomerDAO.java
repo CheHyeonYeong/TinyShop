@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class CustomerDAO {
 
-    private String url = "jdbc:mysql://localhost:5000/jdbctest";
+    private String url = "jdbc:mysql://localhost:3306/jdbctest";
     private String user = "jdbc";
     private String password = "jdbc";
     private static CustomerDAO dao = new CustomerDAO();
