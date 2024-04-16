@@ -17,7 +17,7 @@ public class FoodsServer {
         Scanner sc = new Scanner(System.in); // Scanner 변수 초기화
 
         try{ // try 문 시작
-            severSocket = new ServerSocket(5000); // 포트 번호 5000으로 ServerSocket 생성
+            severSocket = new ServerSocket(3018); // 포트 번호 5000으로 ServerSocket 생성
             System.out.println("연결을 기다리고 있습니다"); // 연결 대기 메시지 출력
             clientSocket = severSocket.accept(); // 클라이언트의 연결 수락
             out = new PrintWriter(clientSocket.getOutputStream()); // 클라이언트에게 데이터를 보내기 위한 PrintWriter 생성

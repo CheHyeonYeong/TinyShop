@@ -16,7 +16,7 @@ public class Main { // Main 클래스 시작
         final Scanner sc = new Scanner(System.in); // Scanner 변수 초기화
         try { // try 문 시작
 
-            clientSocket = new Socket("localhost", 5000); // "localhost"의 포트 번호 5000으로 클라이언트 소켓 생성
+            clientSocket = new Socket("localhost", 3018); // "localhost"의 포트 번호 5000으로 클라이언트 소켓 생성
             out = new PrintWriter(clientSocket.getOutputStream()); // 서버에 데이터를 보내기 위한 PrintWriter 생성
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); // 서버로부터 데이터를 받기 위한 BufferedReader 생성
             String msg; // 문자열 변수 선언
