@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class CustomerDAO {
 
-    private String url = "jdbc:mysql://localhost:5000/jdbctest";
+    private String url = "jdbc:mysql://localhost:3306/jdbctest";
     private String user = "jdbc";
     private String password = "jdbc";
     private static CustomerDAO dao = new CustomerDAO();
@@ -18,11 +18,12 @@ public class CustomerDAO {
      * user 테이블이 없는 경우 생성
      */
     private CustomerDAO() {
-        String sql = "CREATE TABLE IF NOT EXISTS user (" +
+        String sql = "CREATE TABLE IF NOT EXISTS tinyshop (" +
                 "id VARCHAR(255) PRIMARY KEY NOT NULL," +
                 "pw VARCHAR(255) NOT NULL," +
                 "name VARCHAR(255) NOT NULL" +
                 ")";
+        System.out.println('.');
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.executeUpdate();
@@ -101,14 +102,13 @@ public class CustomerDAO {
 
         try {
             conn = getConnection();
-            pstmt = conn.prepareStatement("select * from user order by id desc;");
+            pstmt = conn.prepareStatement("select * from tinyshop order by id desc;");
             rs = pstmt.executeQuery();
             while (rs.next()) {
                 list.add(new String[]{
-                        Integer.toString(rs.getInt(1)),
+                        rs.getString(1),
                         rs.getString(2),
-                        Integer.toString(rs.getInt(3)),
-                        rs.getString(4)
+                        rs.getString(3)
                 });
             }
         } catch (Exception e) {
@@ -116,13 +116,12 @@ public class CustomerDAO {
         } finally {
             close(conn, pstmt, rs);
         }
-        String[][] arr = new String[list.size()][4];
+        String[][] arr = new String[list.size()][3];
         return list.toArray(arr);
     }
 
     /**
      * 이름으로 회원 정보 검색
-
      */
     public String[][] findByName(String name) {
         ArrayList<String[]> list = new ArrayList<String[]>();
@@ -132,14 +131,13 @@ public class CustomerDAO {
 
         try {
             conn = getConnection();
-            pstmt = conn.prepareStatement("select * from user where name like '%" + name + "%' order by id desc;");
+            pstmt = conn.prepareStatement("select * from tinyshop where name like '%" + name + "%' order by id desc;");
             rs = pstmt.executeQuery();
             while (rs.next()) {
                 list.add(new String[]{
-                        Integer.toString(rs.getInt(1)),
+                        rs.getString(1),
                         rs.getString(2),
-                        Integer.toString(rs.getInt(3)),
-                        rs.getString(4)
+                        rs.getString(3)
                 });
             }
         } catch (Exception e) {
@@ -147,7 +145,7 @@ public class CustomerDAO {
         } finally {
             close(conn, pstmt, rs);
         }
-        String[][] arr = new String[list.size()][4];
+        String[][] arr = new String[list.size()][3];
         return list.toArray(arr);
     }
 
@@ -159,7 +157,7 @@ public class CustomerDAO {
         PreparedStatement pstmt = null;
         try {
             conn = getConnection();
-            pstmt = conn.prepareStatement("insert into user(id,pw,name) values(?,?,?)");
+            pstmt = conn.prepareStatement("insert into tinyshop(id,pw,name) values(?,?,?)");
             pstmt.setString(1, user.getId());
             pstmt.setString(2, user.getPw());
             pstmt.setString(3, user.getName());
@@ -175,14 +173,33 @@ public class CustomerDAO {
      * 회원 정보 수정
      *
      */
-    public void update(String pw, String name) {
+    public boolean checkUserExists(String id, String pw) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = getConnection();
+            pstmt = conn.prepareStatement("select * from tinyshop where id=? and pw=?");
+            pstmt.setString(1, id);
+            pstmt.setString(2, pw);
+            rs = pstmt.executeQuery();
+            return rs.next();
+        } catch (Exception e) {
+            System.out.println("오류 발생 : " + e);
+        } finally {
+            close(conn, pstmt, rs);
+        }
+        return false;
+    }
+    public void updateUser(String id, String newPw, String newName) {
         Connection conn = null;
         PreparedStatement pstmt = null;
         try {
             conn = getConnection();
-            pstmt = conn.prepareStatement("update user set pw=?, name =? where id=?");
-            pstmt.setString(1, pw);
-            pstmt.setString(2, name);
+            pstmt = conn.prepareStatement("update tinyshop set pw=?, name=? where id=?");
+            pstmt.setString(1, newPw);
+            pstmt.setString(2, newName);
+            pstmt.setString(3, id);
             pstmt.executeUpdate();
         } catch (Exception e) {
             System.out.println("오류 발생 : " + e);
@@ -200,7 +217,7 @@ public class CustomerDAO {
         PreparedStatement pstmt = null;
         try {
             conn = getConnection();
-            pstmt = conn.prepareStatement("delete from user where id=?");
+            pstmt = conn.prepareStatement("delete from tinyshop where id=?");
             pstmt.setString(1, id);
             pstmt.executeUpdate();
         } catch (Exception e) {

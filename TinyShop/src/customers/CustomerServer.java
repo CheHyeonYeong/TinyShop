@@ -49,6 +49,7 @@ public class CustomerServer {
                         String name = tokens[1];
                         String[][] foundUsers = dao.findByName(name);
                         out.println(arrayToString(foundUsers));
+                        System.out.println("회원 정보가 검색되었습니다.");
                         break;
                     case "userInsert":
                         String id = tokens[1];
@@ -59,13 +60,32 @@ public class CustomerServer {
                         System.out.println(user.toString());
                         dao.userInsert(user);
                         System.out.println("클라이언트에서 연결 되었습니다");
-                        out.write("회원 정보가 추가되었습니다.");
+                        out.println("회원 정보가 추가되었습니다.");
+                        out.flush();
                         break;
                     case "update":
                         String updateId = tokens[1];
-                        String updatePw = tokens[2];
-                        dao.update(updateId, updatePw);
-                        out.println("회원 정보가 수정되었습니다.");
+                        String currentPw = tokens[2];
+                        boolean exists = dao.checkUserExists(updateId, currentPw);
+                        if (exists) {
+                            out.println("해당 회원 정보가 존재합니다. 수정하시겠습니까? (y/n)");
+                            out.flush();
+                            String choice = in.readLine();
+                            if (choice.equalsIgnoreCase("y")) {
+                                out.println("새로운 비밀번호를 입력하세요:");
+                                out.flush();
+                                String newPw = in.readLine();
+                                out.println("새로운 이름을 입력하세요:");
+                                out.flush();
+                                String newName = in.readLine();
+                                dao.updateUser(updateId, newPw, newName);
+                                out.println("회원 정보가 수정되었습니다.");
+                            } else {
+                                out.println("회원 정보 수정이 취소되었습니다.");
+                            }
+                        } else {
+                            out.println("해당 회원 정보가 존재하지 않습니다.");
+                        }
                         break;
                     case "delete":
                         String deleteId = tokens[1];
