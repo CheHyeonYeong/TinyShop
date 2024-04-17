@@ -8,17 +8,15 @@ import java.util.ArrayList;
 
 public class CustomerDAO {
 
-    private String url = "jdbc:mysql://localhost:3306/jdbctest";
-    private String user = "jdbc";
-    private String password = "jdbc";
+    private String url = "jdbc:mysql://localhost:3306/tinyshop";
+    private String user = "tinyshop";
+    private String password = "tinyshop";
     private static CustomerDAO dao = new CustomerDAO();
 
-    /**
-     * 기본 생성자
-     * user 테이블이 없는 경우 생성
-     */
+    // 싱글톤 패턴을 사용하여 CustomerDAO 객체 생성
     private CustomerDAO() {
-        String sql = "CREATE TABLE IF NOT EXISTS tinyshop (" +
+        // customer 테이블이 없으면 생성
+        String sql = "CREATE TABLE IF NOT EXISTS customer (" +
                 "id VARCHAR(255) PRIMARY KEY NOT NULL," +
                 "pw VARCHAR(255) NOT NULL," +
                 "name VARCHAR(255) NOT NULL" +
@@ -32,15 +30,12 @@ public class CustomerDAO {
         }
     }
 
+    // CustomerDAO 인스턴스를 반환하는 static 메서드
     public static CustomerDAO getInstance() {
         return dao;
     }
 
-    /**
-     * 데이터베이스 연결을 위한 Connection 객체 반환
-     *
-     * @return Connection 객체
-     */
+    // 데이터베이스 연결을 반환하는 메서드
     Connection getConnection() {
         Connection conn = null;
         try {
@@ -53,10 +48,7 @@ public class CustomerDAO {
         return conn;
     }
 
-    /**
-     * ResultSet, PreparedStatement, Connection 객체 Close
-
-     */
+    // ResultSet, PreparedStatement, Connection을 닫는 메서드
     void close(Connection conn, PreparedStatement ps, ResultSet rs) {
         if (rs != null) {
             try {
@@ -68,10 +60,7 @@ public class CustomerDAO {
         close(conn, ps);
     }
 
-    /**
-     * PreparedStatement, Connection 객체 Close
-
-     */
+    // PreparedStatement, Connection을 닫는 메서드
     void close(Connection conn, PreparedStatement ps) {
         if (ps != null) {
             try {
@@ -89,11 +78,7 @@ public class CustomerDAO {
         }
     }
 
-    /**
-     * 모든 회원 정보 조회
-     *
-     * @return 회원 정보 2차원 배열
-     */
+    // 모든 사용자 목록을 반환하는 메서드
     public String[][] userList() {
         ArrayList<String[]> list = new ArrayList<String[]>();
         Connection conn = null;
@@ -120,9 +105,7 @@ public class CustomerDAO {
         return list.toArray(arr);
     }
 
-    /**
-     * 이름으로 회원 정보 검색
-     */
+    // 이름으로 사용자를 검색하는 메서드
     public String[][] findByName(String name) {
         ArrayList<String[]> list = new ArrayList<String[]>();
         Connection conn = null;
@@ -131,7 +114,7 @@ public class CustomerDAO {
 
         try {
             conn = getConnection();
-            pstmt = conn.prepareStatement("select * from tinyshop where name like '%" + name + "%' order by id desc;");
+            pstmt = conn.prepareStatement("select * from customer where name like '%" + name + "%' order by id desc;");
             rs = pstmt.executeQuery();
             while (rs.next()) {
                 list.add(new String[]{
@@ -149,15 +132,13 @@ public class CustomerDAO {
         return list.toArray(arr);
     }
 
-    /**
-     * 회원 정보 삽입
-     */
+    // 새로운 사용자를 추가하는 메서드
     public void userInsert(CustomerVO user) {
         Connection conn = null;
         PreparedStatement pstmt = null;
         try {
             conn = getConnection();
-            pstmt = conn.prepareStatement("insert into tinyshop(id,pw,name) values(?,?,?)");
+            pstmt = conn.prepareStatement("insert into customer(id,pw,name) values(?,?,?)");
             pstmt.setString(1, user.getId());
             pstmt.setString(2, user.getPw());
             pstmt.setString(3, user.getName());
@@ -169,17 +150,14 @@ public class CustomerDAO {
         }
     }
 
-    /**
-     * 회원 정보 수정
-     *
-     */
+    // 사용자의 존재 여부를 확인하는 메서드
     public boolean checkUserExists(String id, String pw) {
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
             conn = getConnection();
-            pstmt = conn.prepareStatement("select * from tinyshop where id=? and pw=?");
+            pstmt = conn.prepareStatement("select * from customer where id=? and pw=?");
             pstmt.setString(1, id);
             pstmt.setString(2, pw);
             rs = pstmt.executeQuery();
@@ -191,12 +169,14 @@ public class CustomerDAO {
         }
         return false;
     }
+
+    // 사용자 정보를 업데이트하는 메서드
     public void updateUser(String id, String newPw, String newName) {
         Connection conn = null;
         PreparedStatement pstmt = null;
         try {
             conn = getConnection();
-            pstmt = conn.prepareStatement("update tinyshop set pw=?, name=? where id=?");
+            pstmt = conn.prepareStatement("update customer set pw=?, name=? where id=?");
             pstmt.setString(1, newPw);
             pstmt.setString(2, newName);
             pstmt.setString(3, id);
@@ -208,16 +188,13 @@ public class CustomerDAO {
         }
     }
 
-    /**
-     * 회원 정보 삭제
-     *
-     */
+    // 사용자를 삭제하는 메서드
     public void delete(String id) {
         Connection conn = null;
         PreparedStatement pstmt = null;
         try {
             conn = getConnection();
-            pstmt = conn.prepareStatement("delete from tinyshop where id=?");
+            pstmt = conn.prepareStatement("delete from customer where id=?");
             pstmt.setString(1, id);
             pstmt.executeUpdate();
         } catch (Exception e) {
