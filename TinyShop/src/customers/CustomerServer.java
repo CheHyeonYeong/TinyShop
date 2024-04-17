@@ -43,8 +43,8 @@ public class CustomerServer {
                 switch (command) {
                     //customer list 확인
                     case "userList":
-                        String[][] userList = dao.userList();
-                        out.println(arrayToString(userList));
+                        String[] userList = dao.userList();
+                        out.println(String.join(",", userList));
                         break;
                     //customer 이름으로 찾기    
                     case "findByName":
@@ -91,7 +91,7 @@ public class CustomerServer {
                             out.println("해당 회원 정보가 존재하지 않습니다.");
                         }
                         break;
-                    //customer 삭제    
+                    //customer 삭제
                     case "delete":
                         String deleteId = tokens[1];
                         dao.delete(deleteId);

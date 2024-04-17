@@ -9,17 +9,17 @@ import java.util.ArrayList;
 public class CustomerDAO {
 
     private String url = "jdbc:mysql://localhost:3306/tinyshop";
-    private String user = "tinyshop";
-    private String password = "tinyshop";
+    private String user = "jdbc";
+    private String password = "jdbc";
     private static CustomerDAO dao = new CustomerDAO();
 
     // 싱글톤 패턴을 사용하여 CustomerDAO 객체 생성
     private CustomerDAO() {
         // customer 테이블이 없으면 생성
         String sql = "CREATE TABLE IF NOT EXISTS customer (" +
-                "id VARCHAR(255) PRIMARY KEY NOT NULL," +
-                "pw VARCHAR(255) NOT NULL," +
-                "name VARCHAR(255) NOT NULL" +
+                "cusid VARCHAR(255) PRIMARY KEY NOT NULL," +
+                "cuspw VARCHAR(255) NOT NULL," +
+                "cusname VARCHAR(255) NOT NULL" +
                 ")";
         System.out.println('.');
         try (Connection conn = getConnection();
@@ -79,30 +79,25 @@ public class CustomerDAO {
     }
 
     // 모든 사용자 목록을 반환하는 메서드
-    public String[][] userList() {
-        ArrayList<String[]> list = new ArrayList<String[]>();
+    public String[] userList() {
+        ArrayList<String> list = new ArrayList<>();
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
         try {
             conn = getConnection();
-            pstmt = conn.prepareStatement("select * from tinyshop order by id desc;");
+            pstmt = conn.prepareStatement("select cusid from customer order by cusid desc");
             rs = pstmt.executeQuery();
             while (rs.next()) {
-                list.add(new String[]{
-                        rs.getString(1),
-                        rs.getString(2),
-                        rs.getString(3)
-                });
+                list.add(rs.getString(1));
             }
         } catch (Exception e) {
             System.out.println("오류 발생 : " + e);
         } finally {
             close(conn, pstmt, rs);
         }
-        String[][] arr = new String[list.size()][3];
-        return list.toArray(arr);
+        return list.toArray(new String[0]);
     }
 
     // 이름으로 사용자를 검색하는 메서드
@@ -114,7 +109,7 @@ public class CustomerDAO {
 
         try {
             conn = getConnection();
-            pstmt = conn.prepareStatement("select * from customer where name like '%" + name + "%' order by id desc;");
+            pstmt = conn.prepareStatement("select * from customer where cusname like '%" + name + "%' order by cusid desc;");
             rs = pstmt.executeQuery();
             while (rs.next()) {
                 list.add(new String[]{
@@ -138,7 +133,7 @@ public class CustomerDAO {
         PreparedStatement pstmt = null;
         try {
             conn = getConnection();
-            pstmt = conn.prepareStatement("insert into customer(id,pw,name) values(?,?,?)");
+            pstmt = conn.prepareStatement("insert into customer(cusid,cuspw,cusname) values(?,?,?)");
             pstmt.setString(1, user.getId());
             pstmt.setString(2, user.getPw());
             pstmt.setString(3, user.getName());
@@ -157,7 +152,7 @@ public class CustomerDAO {
         ResultSet rs = null;
         try {
             conn = getConnection();
-            pstmt = conn.prepareStatement("select * from customer where id=? and pw=?");
+            pstmt = conn.prepareStatement("select * from customer where cusid=? and cuspw=?");
             pstmt.setString(1, id);
             pstmt.setString(2, pw);
             rs = pstmt.executeQuery();
@@ -176,7 +171,7 @@ public class CustomerDAO {
         PreparedStatement pstmt = null;
         try {
             conn = getConnection();
-            pstmt = conn.prepareStatement("update customer set pw=?, name=? where id=?");
+            pstmt = conn.prepareStatement("update customer set cuspw=?, name=? where cusid=?");
             pstmt.setString(1, newPw);
             pstmt.setString(2, newName);
             pstmt.setString(3, id);
@@ -194,7 +189,7 @@ public class CustomerDAO {
         PreparedStatement pstmt = null;
         try {
             conn = getConnection();
-            pstmt = conn.prepareStatement("delete from customer where id=?");
+            pstmt = conn.prepareStatement("delete from customer where cusid=?");
             pstmt.setString(1, id);
             pstmt.executeUpdate();
         } catch (Exception e) {
