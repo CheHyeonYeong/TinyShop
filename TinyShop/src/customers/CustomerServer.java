@@ -41,16 +41,19 @@ public class CustomerServer {
                 String command = tokens[0];
 
                 switch (command) {
+                    //customer list 확인
                     case "userList":
                         String[][] userList = dao.userList();
                         out.println(arrayToString(userList));
                         break;
+                    //customer 이름으로 찾기    
                     case "findByName":
                         String name = tokens[1];
                         String[][] foundUsers = dao.findByName(name);
                         out.println(arrayToString(foundUsers));
                         System.out.println("회원 정보가 검색되었습니다.");
                         break;
+                    //customer 추가    
                     case "userInsert":
                         String id = tokens[1];
                         String pw = tokens[2];
@@ -63,6 +66,7 @@ public class CustomerServer {
                         out.println("회원 정보가 추가되었습니다.");
                         out.flush();
                         break;
+                    //customer 수정    
                     case "update":
                         String updateId = tokens[1];
                         String currentPw = tokens[2];
@@ -87,6 +91,7 @@ public class CustomerServer {
                             out.println("해당 회원 정보가 존재하지 않습니다.");
                         }
                         break;
+                    //customer 삭제    
                     case "delete":
                         String deleteId = tokens[1];
                         dao.delete(deleteId);
