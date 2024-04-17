@@ -27,7 +27,7 @@ public class FoodsServer {
 
             String msg;
             while ((msg = in.readLine()) != null) {
-                String[] tokens = msg.split("\\|");
+                String[] tokens = msg.split(",");
                 String command = tokens[0];
 
                 switch (command) {
