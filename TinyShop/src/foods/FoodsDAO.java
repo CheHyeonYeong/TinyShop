@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FoodsDAO {
-    private String url = "jdbc:mysql://localhost:3306/jdbc";
+    private String url = "jdbc:mysql://localhost:3306/tinyshop";
     private String user = "jdbc";
     private String password = "jdbc";
 
@@ -13,13 +13,13 @@ public class FoodsDAO {
     private Statement stmt = null;
     private ResultSet rs = null;
 
-    public void createFoodTable() {
+    public void FoodTable() {
         String sql = "CREATE TABLE IF NOT EXISTS Food (" +
-                "id INT AUTO_INCREMENT PRIMARY KEY," +
-                "category VARCHAR(255) NOT NULL," +
-                "name VARCHAR(255) NOT NULL," +
-                "description TEXT," +
-                "price BIGINT NOT NULL" +
+                "food_id INT AUTO_INCREMENT PRIMARY KEY," +
+                "food_category VARCHAR(255) NOT NULL," +
+                "food_name VARCHAR(255) NOT NULL," +
+                "food_description TEXT," +
+                "food_price BIGINT NOT NULL" +
                 ")";
         try (Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
@@ -33,7 +33,7 @@ public class FoodsDAO {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(url, user, password);
-            createFoodTable();
+            FoodTable();
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
@@ -41,12 +41,12 @@ public class FoodsDAO {
 
     public int insertFood(FoodsVO vo) {
         int result = 0;
-        String sql = "INSERT INTO Food (category, name, description, price) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Food (food_category, food_name, food_description, food_price) VALUES (?, ?, ?, ?)";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, vo.getCategory());
-            pstmt.setString(2, vo.getName());
-            pstmt.setString(3, vo.getDescription());
-            pstmt.setLong(4, vo.getPrice());
+            pstmt.setString(1, vo.getFood_category());
+            pstmt.setString(2, vo.getFood_name());
+            pstmt.setString(3, vo.getFood_description());
+            pstmt.setLong(4, vo.getFood_price());
             result = pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -61,11 +61,11 @@ public class FoodsDAO {
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 FoodsVO vo = new FoodsVO(
-                        rs.getInt("id"),
-                        rs.getString("category"),
-                        rs.getString("name"),
-                        rs.getString("description"),
-                        rs.getLong("price")
+                        rs.getInt("food_id"),
+                        rs.getString("food_category"),
+                        rs.getString("food_name"),
+                        rs.getString("food_description"),
+                        rs.getLong("food_price")
                 );
                 foods.add(vo);
             }
@@ -77,13 +77,13 @@ public class FoodsDAO {
 
     public int updateFood(FoodsVO vo) {
         int result = 0;
-        String sql = "UPDATE Food SET category = ?, name = ?, description = ?, price = ? WHERE id = ?";
+        String sql = "UPDATE Food SET food_category = ?, food_name = ?, food_description = ?, food_price = ? WHERE food_id = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, vo.getCategory());
-            pstmt.setString(2, vo.getName());
-            pstmt.setString(3, vo.getDescription());
-            pstmt.setLong(4, vo.getPrice());
-            pstmt.setInt(5, vo.getId());
+            pstmt.setString(1, vo.getFood_category());
+            pstmt.setString(2, vo.getFood_name());
+            pstmt.setString(3, vo.getFood_description());
+            pstmt.setLong(4, vo.getFood_price());
+            pstmt.setInt(5, vo.getFood_id());
             result = pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -91,11 +91,11 @@ public class FoodsDAO {
         return result;
     }
 
-    public int deleteFood(int id) {
+    public int deleteFood(int food_id) {
         int result = 0;
-        String sql = "DELETE FROM Food WHERE id = ?";
+        String sql = "DELETE FROM Food WHERE food_id = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
+            pstmt.setInt(1, food_id);
             result = pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
