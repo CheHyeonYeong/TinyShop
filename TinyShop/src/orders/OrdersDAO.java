@@ -1,123 +1,184 @@
+// OrdersDAO.java
 package orders;
-
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-//
 public class OrdersDAO {
+    private static OrdersDAO instance;
+    private Connection conn;
 
-    // SQL 쿼리문 상수 정의
+    private OrdersDAO() {
+        try {
+            // 데이터베이스 연결 정보
+            String url = "jdbc:mysql://localhost:3306/tinyshop";
+            String username = "jdbc";
+            String password = "jdbc";
 
-    //MySQL 쿼리문을 상수로 정의
-    //주문
-    private static final String INSERT_ORDER = "INSERT INTO orders (id, customer_name, food_name, quantity) VALUES (?, ?, ?)";
-    //주문 조회문
-    private static final String SELECT_ALL_ORDERS = "SELECT * FROM orders";
-    //주문 수정문
-    private static final String UPDATE_ORDER = "UPDATE orders SET quantity = ? WHERE id = ?";
-    //주문 삭제문
-    private static final String DELETE_ORDER = "DELETE FROM orders WHERE id = ?";
+            // 데이터베이스 연결
+            conn = DriverManager.getConnection(url, username, password);
 
-//
-
-    // 데이터베이스 연결 메서드
-    private Connection getConnection() throws SQLException {
-        // 데이터베이스 연결 정보 설정  localhost:port/테이블명, "user","password"
-        return DriverManager.getConnection("jdbc:mysql://localhost:3306/orders", "jdbc", "jdbc");
-    }
-
-
-
-    public void createOrder(OrdersVO ordersvo) {
-        // 데이터베이스 연결 및 PreparedStatement 생성
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(INSERT_ORDER)) {
-            // 주문 정보를 PreparedStatement에 설정
-            stmt.setString(2, ordersvo.getFoodName());
-            stmt.setInt(3, ordersvo.getQuantity());
-            // 쿼리 실행
-            stmt.executeUpdate();
+            // orders 테이블 생성
+            createOrdersTable();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    // 모든 주문 조회 메서드
-    public List<OrdersVO> getAllOrders() {
-        // 데이터베이스 연결 및 Statement 생성
-        List<OrdersVO> orders = new ArrayList<>();
-        try (Connection conn = getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(SELECT_ALL_ORDERS)) {
-            // 결과 집합에서 Order 객체 생성 및 추가
+    public static OrdersDAO getInstance() {
+        if (instance == null) {
+            instance = new OrdersDAO();
+        }
+        return instance;
+    }
+
+    // orders 테이블 생성 메서드
+    private void createOrdersTable() throws SQLException {
+        String sql = "CREATE TABLE IF NOT EXISTS orders (" +
+                "order_id INT AUTO_INCREMENT PRIMARY KEY," +
+                "food_id INT," +
+                "food_name VARCHAR(255)," +
+                "cusid VARCHAR(255)," +
+                "cusname VARCHAR(255)," +
+                "quantity INT" +
+                ")";
+        try (Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+        }
+    }
+
+    // food 테이블의 food_id와 food_name 조회 메서드
+    public void getFoodInfo() throws SQLException {
+        String sql = "SELECT food_id, food_name FROM food";
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                OrdersVO ordersvo = new OrdersVO();
-                ordersvo.setId(rs.getInt("id"));
-                ordersvo.setCustomerName(rs.getString("customer_name"));
-                ordersvo.setFoodName(rs.getString("food_name"));
-                ordersvo.setQuantity(rs.getInt("quantity"));
-                orders.add(ordersvo);
+                int foodId = rs.getInt("food_id");
+                String foodName = rs.getString("food_name");
+                System.out.println("Food ID: " + foodId + ", Food Name: " + foodName);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        }
+    }
+
+    // customer 테이블의 cusid와 cusname 조회 메서드
+    public void getCustomerInfo() throws SQLException {
+        String sql = "SELECT cusid, cusname FROM customer";
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                String cusid = rs.getString("cusid");
+                String cusname = rs.getString("cusname");
+                System.out.println("Customer ID: " + cusid + ", Customer Name: " + cusname);
+            }
+        }
+    }
+
+    // 주문을 받는 메서드
+    public void placeOrder(OrdersVO order) throws SQLException {
+        String sql = "INSERT INTO orders (food_id, food_name, cusid, cusname, quantity) " +
+                "VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, order.getFoodId());
+            pstmt.setString(2, order.getFoodName());
+            pstmt.setString(3, order.getCusid());
+            pstmt.setString(4, order.getCusname());
+            pstmt.setInt(5, order.getQuantity());
+            pstmt.executeUpdate();
+        }
+    }
+
+    // 고객의 주문 내역을 조회하는 메서드
+    public List<OrdersVO> getOrdersByCusid(String cusid) throws SQLException {
+        List<OrdersVO> orders = new ArrayList<>();
+        String sql = "SELECT * FROM orders"
+                +" WHERE cusid = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, cusid);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    OrdersVO order = new OrdersVO();
+                    order.setOrderId(rs.getInt("order_id"));
+                    order.setFoodId(rs.getInt("food_id"));
+                    order.setFoodName(rs.getString("food_name"));
+                    order.setCusid(rs.getString("cusid"));
+                    order.setCusname(rs.getString("cusname"));
+                    order.setQuantity(rs.getInt("quantity"));
+                    orders.add(order);
+                }
+            }
         }
         return orders;
     }
-    // 특정 고객의 모든 주문 조회
-    public List<OrdersVO> getOrdersByCustomerId(int customerId) {
-        List<OrdersVO> orders = new ArrayList<>();
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM orders WHERE customer_id = ?")) {
-            stmt.setInt(1, customerId);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                OrdersVO ordersvo = new OrdersVO();
-                ordersvo.setId(rs.getInt("id"));
-                ordersvo.setCustomerName(rs.getString("customer_name"));
-                ordersvo.setFoodName(rs.getString("food_name"));
-                ordersvo.setQuantity(rs.getInt("quantity"));
-                orders.add(ordersvo);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return orders;
-    }
 
-    // 주문 수정 메서드
-    // 특정 고객의 주문 내역 수정
-    public void updateOrder(int customerId, int orderId, OrdersVO updatedOrder) {
-        // SQL 쿼리 준비
-        String updateQuery = "UPDATE orders SET quantity = ? WHERE id = ? AND customer_id = ?";
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
-            // 변경된 주문 정보 설정
-            stmt.setInt(1, updatedOrder.getQuantity());
-            stmt.setInt(2, orderId);
-            stmt.setInt(3, customerId);
-            // 쿼리 실행
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+    // 주문 내역 수정 메서드
+    public boolean updateOrder(int orderId, String foodName, int quantity) throws SQLException {
+        String sql = "UPDATE orders "
+                +"SET food_name = ?, quantity = ? "
+                + "WHERE order_id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, foodName);
+            pstmt.setInt(2, quantity);
+            pstmt.setInt(3, orderId);
+            int updatedRows = pstmt.executeUpdate();
+            return updatedRows > 0;
         }
     }
 
     // 주문 삭제 메서드
-    public void deleteOrder(int orderId) {
-        // 데이터베이스 연결 및 PreparedStatement 생성
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(DELETE_ORDER)) {
-            // 삭제할 주문 ID를 PreparedStatement에 설정
-            stmt.setInt(1, orderId);
-            // 쿼리 실행
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public boolean deleteOrder(int orderId) throws SQLException {
+        String sql = "DELETE FROM orders"
+                +" WHERE order_id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, orderId);
+            int deletedRows = pstmt.executeUpdate();
+            return deletedRows > 0;
         }
     }
 
+    // 주문 정보 유효성 검사 메서드
+    public boolean isValid(OrdersVO order) throws SQLException {
+        // cusid와 cusname 검증
+        String customerSql = "SELECT COUNT(*) FROM customer WHERE cusid = ? AND cusname = ?";
+        try (PreparedStatement customerStmt = conn.prepareStatement(customerSql)) {
+            customerStmt.setString(1, order.getCusid());
+            customerStmt.setString(2, order.getCusname());
+            try (ResultSet customerRs = customerStmt.executeQuery()) {
+                customerRs.next();
+                int customerCount = customerRs.getInt(1);
+                if (customerCount == 0) {
+                    return false;
+                }
+            }
+        }
 
+        // foodid와 foodname 검증
+        String foodSql = "SELECT COUNT(*) FROM food WHERE food_id = ? AND food_name = ?";
+        try (PreparedStatement foodStmt = conn.prepareStatement(foodSql)) {
+            foodStmt.setInt(1, order.getFoodId());
+            foodStmt.setString(2, order.getFoodName());
+            try (ResultSet foodRs = foodStmt.executeQuery()) {
+                foodRs.next();
+                int foodCount = foodRs.getInt(1);
+                if (foodCount == 0) {
+                    return false;
+                }
+            }
+        }
 
+        return true;
+    }
+
+    // 유효한 고객 ID인지 확인하는 메서드
+    public boolean isValidCustomerId(String cusid) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM customer WHERE cusid = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, cusid);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                rs.next();
+                int count = rs.getInt(1);
+                return count > 0;
+            }
+        }
+    }
 }

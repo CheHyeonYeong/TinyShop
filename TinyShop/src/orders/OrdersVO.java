@@ -1,53 +1,76 @@
+// OrdersVO.java
 package orders;
-//
-public class OrdersVO {
 
-    //- 주문 생성: 주문 생성 시 고객과 해당 음식의 정보 (이름, 수량 포함)
-    //고객 ID
-    private int id;
-    private String customerName;
-    //음식 이름
+public class OrdersVO {
+    private int orderId;
+    private int foodId;
     private String foodName;
-    //음식의 수량
+    private String cusid;
+    private String cusname;
     private int quantity;
 
-    //기본생성자
-    public OrdersVO(){}
+    public OrdersVO() {
+    }
 
-    //필드생성자
-    public OrdersVO(int id,String customerName ,String foodName, int quantity) {
-        this.id = id;
+    public OrdersVO(int foodId, String foodName, String cusid, String cusname, int quantity) {
+        this.foodId = foodId;
         this.foodName = foodName;
+        this.cusid = cusid;
+        this.cusname = cusname;
         this.quantity = quantity;
-        this.customerName = customerName;
     }
 
+    public int getOrderId() {
+        return orderId;
+    }
 
-    //getter , setter
-    public int getId() {
-        return id;
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
     }
-    public void setId(int id) {
-        this.id = id;
+
+    public int getFoodId() {
+        return foodId;
     }
+
+    public void setFoodId(int foodId) {
+        this.foodId = foodId;
+    }
+
     public String getFoodName() {
         return foodName;
     }
+
     public void setFoodName(String foodName) {
         this.foodName = foodName;
     }
+
+    public String getCusid() {
+        return cusid;
+    }
+
+    public void setCusid(String cusid) {
+        this.cusid = cusid;
+    }
+
+    public String getCusname() {
+        return cusname;
+    }
+
+    public void setCusname(String cusname) {
+        this.cusname = cusname;
+    }
+
     public int getQuantity() {
         return quantity;
     }
+
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
-    public String getCustomerName() {
-        return customerName;
-    }
-
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
+    @Override
+    public String toString() {
+        return "OrdersVO [orderId=" + orderId + ", foodId=" + foodId + ", foodName=" + foodName + ", cusid=" + cusid
+                + ", cusname=" + cusname + ", quantity=" + quantity + "]";
     }
 }
