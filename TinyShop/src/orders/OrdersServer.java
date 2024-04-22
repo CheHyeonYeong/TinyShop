@@ -1,3 +1,4 @@
+// OrdersServer.java
 package orders;
 
 import java.io.BufferedReader;
@@ -6,102 +7,147 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.List;
-import java.util.Scanner;
-//
+import java.util.UUID;
+
 public class OrdersServer {
     public static void main(String[] args) {
-        // ServerSocket 생성 및 연결 대기
         ServerSocket serverSocket = null;
         Socket clientSocket = null;
         BufferedReader in = null;
         PrintWriter out = null;
-        Scanner sc = new Scanner(System.in);
-
-        // OrdersDAO 객체 생성
-        OrdersDAO ordersDAO = new OrdersDAO();
 
         try {
-            // 서버 소켓 생성 및 포트 바인딩
+            // OrdersDAO 인스턴스 가져오기
+            OrdersDAO ordersDAO = OrdersDAO.getInstance();
+
             serverSocket = new ServerSocket(3018);
             System.out.println("연결을 기다리고 있습니다");
-            clientSocket = serverSocket.accept(); // 클라이언트 연결 수락
-            out = new PrintWriter(clientSocket.getOutputStream()); // 클라이언트로 데이터 전송
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); // 클라이언트로부터 데이터 수신
+            clientSocket = serverSocket.accept();
+            out = new PrintWriter(clientSocket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             System.out.println("클라이언트와 연결 성공");
 
-            // 무한 루프로 클라이언트의 요청 처리
+            // food 테이블과 customer 테이블 정보 출력
+            ordersDAO.getFoodInfo();
+            ordersDAO.getCustomerInfo();
+
             while (true) {
-                String msg = in.readLine(); // 클라이언트로부터 명령 수신
-                if (msg.equalsIgnoreCase("quit")) { // "quit" 명령 수신 시 종료
-                    System.out.println("클라이언트에서 연결을 종료하였습니다");
+                String msg = in.readLine();
+                if (msg == null) {
                     break;
                 }
 
-                // 주문 관리 기능 수행
-                switch (msg) {
-                    case "create":
-                        // 주문 생성
-                        OrdersVO newOrder = createOrderFromClient(in);
-                        ordersDAO.createOrder(newOrder);
-                        out.println("주문에 성공했습니다");
-                        break;
-                    case "list":
-                        // 모든 주문 조회
-                        List<OrdersVO> orders = ordersDAO.getAllOrders();
-                        sendOrdersToClient(out, orders);
-                        break;
-                    case "update":
-                        // 주문 수정
-                        int customerId = Integer.parseInt(in.readLine()); // 고객 ID 읽기
-                        OrdersVO updatedOrder = updateOrderFromClient(in);
-                        ordersDAO.updateOrder(customerId, updatedOrder.getId(), updatedOrder);
-                        out.println("주문내역 수정에 성공했습니다.");
-                        break;
-                    case "delete":
-                        // 주문 삭제
-                        int orderId = Integer.parseInt(in.readLine());
-                        ordersDAO.deleteOrder(orderId);
-                        out.println("주문을 삭제하였습니다");
-                        break;
-                    default:
-                        out.println("잘못된 입력입니다. 다시 시도해 주세요");
+                // 토큰 생성
+                String token = generateToken();
+
+                String[] request = msg.split(",");
+                String command = request[0];
+
+                try {
+                    switch (command) {
+                        case "placeOrder"://placeOrder,1(foode_id),2(food_name),3(cusid),4(cusname),5(quantity)
+                            if (request.length != 6) {
+                                out.println("유효하지 않은 주문 정보입니다.");
+                                break;
+                            }
+                            OrdersVO order = parseOrder(msg);
+                            if (ordersDAO.isValid(order)) {
+                                ordersDAO.placeOrder(order);
+                                out.println("주문이 성공적으로 접수되었습니다.");
+                            } else {
+                                out.println("유효하지 않은 주문 정보입니다.");
+                            }
+                            break;
+                        case "getOrders": //getOrders,1(cusid)
+                            if (request.length != 2) {
+                                out.println("유효하지 않은 요청입니다.");
+                                break;
+                            }
+                            String cusid = request[1];
+                            if (ordersDAO.isValidCustomerId(cusid)) {
+                                List<OrdersVO> orders = ordersDAO.getOrdersByCusid(cusid);
+                                out.println("고객의 주문 내역:");
+                                for (OrdersVO o : orders) {
+                                    out.println(o.toString());
+                                }
+                            } else {
+                                out.println("유효하지 않은 고객 ID입니다.");
+                            }
+                            break;
+                        //updateOrder,1(order_id),2(food_name),3(quantity)
+                        case "updateOrder":
+                            if (request.length != 4) {
+                                out.println("유효하지 않은 주문 정보입니다.");
+                                break;
+                            }
+                            int updateOrderId = Integer.parseInt(request[1]);
+                            String updateFoodName = request[2];
+                            int updateQuantity = Integer.parseInt(request[3]);
+                            boolean updateResult = ordersDAO.updateOrder(updateOrderId, updateFoodName, updateQuantity);
+                            if (updateResult) {
+                                out.println("주문이 성공적으로 수정되었습니다.");
+                            } else {
+                                out.println("주문 수정에 실패하였습니다.");
+                            }
+                            break;
+                            //deleteOrder,1(order_id)
+                        case "deleteOrder":
+                            if (request.length != 2) {
+                                out.println("유효하지 않은 요청입니다.");
+                                break;
+                            }
+                            int deleteOrderId = Integer.parseInt(request[1]);
+                            boolean deleteResult = ordersDAO.deleteOrder(deleteOrderId);
+                            if (deleteResult) {
+                                out.println("주문이 성공적으로 삭제되었습니다.");
+                            } else {
+                                out.println("주문 삭제에 실패하였습니다.");
+                            }
+                            break;
+                        default:
+                            out.println("유효하지 않은 명령입니다.");
+                            break;
+                    }
+                } catch (SQLException e) {
+                    out.println("데이터베이스 오류가 발생했습니다: " + e.getMessage());
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    out.println("유효하지 않은 요청 형식입니다.");
+                } catch (NumberFormatException e) {
+                    out.println("유효하지 않은 숫자 형식입니다.");
                 }
-                out.flush(); // 출력 버퍼 비우기
             }
-            // 리소스 정리
+
             out.close();
             clientSocket.close();
             serverSocket.close();
-        } catch (IOException e) {
+        } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
     }
 
-    // 클라이언트로부터 주문 정보 생성
-    private static OrdersVO createOrderFromClient(BufferedReader in) throws IOException {
-        OrdersVO order = new OrdersVO();
-        order.setFoodName(in.readLine());
-        order.setQuantity(Integer.parseInt(in.readLine()));
-        return order;
+    // 토큰 생성 메서드
+    private static String generateToken() {
+        return UUID.randomUUID().toString();
     }
 
-    // 클라이언트로부터 주문 정보 수정
-    private static OrdersVO updateOrderFromClient(BufferedReader in) throws IOException {
-        OrdersVO order = new OrdersVO();
-        order.setId(Integer.parseInt(in.readLine()));
-        order.setQuantity(Integer.parseInt(in.readLine()));
-        return order;
-    }
+    // 주문 정보 파싱 메서드
+    private static OrdersVO parseOrder(String msg) {
+        String[] orderInfo = msg.split(",");
+        int foodId = Integer.parseInt(orderInfo[1]);
+        String foodName = orderInfo[2];
+        String cusid = orderInfo[3];
+        String cusname = orderInfo[4];
+        int quantity = Integer.parseInt(orderInfo[5]);
 
-    // 주문 목록을 클라이언트에게 전송
-    private static void sendOrdersToClient(PrintWriter out, List<OrdersVO> orders) {
-        for (OrdersVO order : orders) {
-            out.println(order.getId());
-            out.println(order.getFoodName());
-            out.println(order.getQuantity());
-            out.println();
-        }
-        out.println("주문을 종료합니다.");
+        OrdersVO order = new OrdersVO();
+        order.setFoodId(foodId);
+        order.setFoodName(foodName);
+        order.setCusid(cusid);
+        order.setCusname(cusname);
+        order.setQuantity(quantity);
+
+        return order;
     }
 }
