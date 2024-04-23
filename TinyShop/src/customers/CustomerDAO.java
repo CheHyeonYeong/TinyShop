@@ -17,9 +17,9 @@ public class CustomerDAO {
     private CustomerDAO() {
         // customer 테이블이 없으면 생성
         String sql = "CREATE TABLE IF NOT EXISTS customer (" +
-                "cusid VARCHAR(255) PRIMARY KEY NOT NULL," +
-                "cuspw VARCHAR(255) NOT NULL," +
-                "cusname VARCHAR(255) NOT NULL" +
+                "cus_id VARCHAR(255) PRIMARY KEY NOT NULL," +
+                "cus_pw VARCHAR(255) NOT NULL," +
+                "cus_name VARCHAR(255) NOT NULL" +
                 ")";
         System.out.println('.');
         try (Connection conn = getConnection();
@@ -87,7 +87,7 @@ public class CustomerDAO {
 
         try {
             conn = getConnection();
-            pstmt = conn.prepareStatement("select cusid from customer order by cusid desc");
+            pstmt = conn.prepareStatement("select cus_id from customer order by cus_id desc");
             rs = pstmt.executeQuery();
             while (rs.next()) {
                 list.add(rs.getString(1));
@@ -109,7 +109,7 @@ public class CustomerDAO {
 
         try {
             conn = getConnection();
-            pstmt = conn.prepareStatement("select * from customer where cusname like '%" + name + "%' order by cusid desc;");
+            pstmt = conn.prepareStatement("select * from customer where cus_name like '%" + name + "%' order by cus_id desc;");
             rs = pstmt.executeQuery();
             while (rs.next()) {
                 list.add(new String[]{
@@ -133,7 +133,7 @@ public class CustomerDAO {
         PreparedStatement pstmt = null;
         try {
             conn = getConnection();
-            pstmt = conn.prepareStatement("insert into customer(cusid,cuspw,cusname) values(?,?,?)");
+            pstmt = conn.prepareStatement("insert into customer(cus_id,cus_pw,cus_name) values(?,?,?)");
             pstmt.setString(1, user.getId());
             pstmt.setString(2, user.getPw());
             pstmt.setString(3, user.getName());
@@ -152,7 +152,7 @@ public class CustomerDAO {
         ResultSet rs = null;
         try {
             conn = getConnection();
-            pstmt = conn.prepareStatement("select * from customer where cusid=? and cuspw=?");
+            pstmt = conn.prepareStatement("select * from customer where cus_id=? and cus_pw=?");
             pstmt.setString(1, id);
             pstmt.setString(2, pw);
             rs = pstmt.executeQuery();
@@ -171,7 +171,7 @@ public class CustomerDAO {
         PreparedStatement pstmt = null;
         try {
             conn = getConnection();
-            pstmt = conn.prepareStatement("update customer set cuspw=?, name=? where cusid=?");
+            pstmt = conn.prepareStatement("update customer set cus_pw=?, name=? where cus_id=?");
             pstmt.setString(1, newPw);
             pstmt.setString(2, newName);
             pstmt.setString(3, id);
@@ -189,7 +189,7 @@ public class CustomerDAO {
         PreparedStatement pstmt = null;
         try {
             conn = getConnection();
-            pstmt = conn.prepareStatement("delete from customer where cusid=?");
+            pstmt = conn.prepareStatement("delete from customer where cus_id=?");
             pstmt.setString(1, id);
             pstmt.executeUpdate();
         } catch (Exception e) {

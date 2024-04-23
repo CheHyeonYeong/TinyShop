@@ -102,7 +102,6 @@ public class CustomerServer {
                         break;
                 }
 
-
                 out.flush(); // 버퍼 비우기
             }
             out.close(); // 출력 스트림 닫기
