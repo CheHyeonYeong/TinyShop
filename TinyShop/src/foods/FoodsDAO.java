@@ -10,8 +10,6 @@ public class FoodsDAO {
     private String password = "jdbc";
 
     private Connection conn = null;
-    private Statement stmt = null;
-    private ResultSet rs = null;
 
     public void FoodTable() {
         String sql = "CREATE TABLE IF NOT EXISTS Food (" +

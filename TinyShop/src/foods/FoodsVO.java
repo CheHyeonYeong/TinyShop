@@ -1,11 +1,11 @@
 package foods;
 
 public class FoodsVO {
-    private int foodId; // food_id -> foodId
-    private String foodCategory; // food_category -> foodCategory
-    private String foodName; // food_name -> foodName
-    private String foodDescription; // food_description -> foodDescription
-    private long foodPrice; // food_price -> foodPrice
+    private int foodId;
+    private String foodCategory;
+    private String foodName;
+    private String foodDescription;
+    private long foodPrice;
 
     public FoodsVO(int foodId, String foodCategory, String foodName, String foodDescription, long foodPrice) {
         this.foodId = foodId;
