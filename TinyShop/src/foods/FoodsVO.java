@@ -1,70 +1,70 @@
 package foods;
 
 public class FoodsVO {
-    private int food_id;
-    private String food_category;
-    private String food_name;
-    private String food_description;
-    private long food_price;
+    private int foodId; // food_id -> foodId
+    private String foodCategory; // food_category -> foodCategory
+    private String foodName; // food_name -> foodName
+    private String foodDescription; // food_description -> foodDescription
+    private long foodPrice; // food_price -> foodPrice
 
-    public FoodsVO(int food_id, String food_category, String food_name, String food_description, long food_price) {
-        this.food_id = food_id;
-        this.food_category = food_category;
-        this.food_name = food_name;
-        this.food_description = food_description;
-        this.food_price = food_price;
+    public FoodsVO(int foodId, String foodCategory, String foodName, String foodDescription, long foodPrice) {
+        this.foodId = foodId;
+        this.foodCategory = foodCategory;
+        this.foodName = foodName;
+        this.foodDescription = foodDescription;
+        this.foodPrice = foodPrice;
     }
 
-    public FoodsVO(String food_category, String food_name, String food_description, long food_price) {
-        this.food_category = food_category;
-        this.food_name = food_name;
-        this.food_description = food_description;
-        this.food_price = food_price;
+    public FoodsVO(String foodCategory, String foodName, String foodDescription, long foodPrice) {
+        this.foodCategory = foodCategory;
+        this.foodName = foodName;
+        this.foodDescription = foodDescription;
+        this.foodPrice = foodPrice;
     }
 
     // getter, setter
-    public int getFood_id() {
-        return food_id;
+    public int getFoodId() {
+        return foodId;
     }
 
-    public void setFood_id(int food_id) {
-        this.food_id = food_id;
+    public void setFoodId(int foodId) {
+        this.foodId = foodId;
     }
 
-    public String getFood_category() {
-        return food_category;
+    public String getFoodCategory() {
+        return foodCategory;
     }
 
-    public void setFood_category(String food_category) {
-        this.food_category = food_category;
+    public void setFoodCategory(String foodCategory) {
+        this.foodCategory = foodCategory;
     }
 
-    public String getFood_name() {
-        return food_name;
+    public String getFoodName() {
+        return foodName;
     }
 
-    public void setFood_name(String food_name) {
-        this.food_name = food_name;
+    public void setFoodName(String foodName) {
+        this.foodName = foodName;
     }
 
-    public String getFood_description() {
-        return food_description;
+    public String getFoodDescription() {
+        return foodDescription;
     }
 
-    public void setFood_description(String food_description) {
-        this.food_description = food_description;
+    public void setFoodDescription(String foodDescription) {
+        this.foodDescription = foodDescription;
     }
 
-    public long getFood_price() {
-        return food_price;
+    public long getFoodPrice() {
+        return foodPrice;
     }
 
-    public void setFood_price(long food_price) {
-        this.food_price = food_price;
+    public void setFoodPrice(long foodPrice) {
+        this.foodPrice = foodPrice;
     }
 
     @Override
     public String toString() {
-        return "음식 번호: " + food_id + ", 음식 카테고리: " + food_category + ", 음식이름: " + food_name + ", 음식설명: " + food_description + ", 가격: " + food_price;
+        return "음식 번호: " + foodId + ", 음식 카테고리: " + foodCategory + ", 음식이름: " + foodName + ", 음식설명: " + foodDescription + ", 가격: " + foodPrice;
     }
 }

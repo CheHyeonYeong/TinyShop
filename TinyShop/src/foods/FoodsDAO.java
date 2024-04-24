@@ -43,10 +43,10 @@ public class FoodsDAO {
         int result = 0;
         String sql = "INSERT INTO Food (food_category, food_name, food_description, food_price) VALUES (?, ?, ?, ?)";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, vo.getFood_category());
-            pstmt.setString(2, vo.getFood_name());
-            pstmt.setString(3, vo.getFood_description());
-            pstmt.setLong(4, vo.getFood_price());
+            pstmt.setString(1, vo.getFoodCategory());
+            pstmt.setString(2, vo.getFoodName());
+            pstmt.setString(3, vo.getFoodDescription());
+            pstmt.setLong(4, vo.getFoodPrice());
             result = pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -79,11 +79,11 @@ public class FoodsDAO {
         int result = 0;
         String sql = "UPDATE Food SET food_category = ?, food_name = ?, food_description = ?, food_price = ? WHERE food_id = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, vo.getFood_category());
-            pstmt.setString(2, vo.getFood_name());
-            pstmt.setString(3, vo.getFood_description());
-            pstmt.setLong(4, vo.getFood_price());
-            pstmt.setInt(5, vo.getFood_id());
+            pstmt.setString(1, vo.getFoodCategory());
+            pstmt.setString(2, vo.getFoodName());
+            pstmt.setString(3, vo.getFoodDescription());
+            pstmt.setLong(4, vo.getFoodPrice());
+            pstmt.setInt(5, vo.getFoodId());
             result = pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
