@@ -32,13 +32,8 @@ public class FoodsServer {
 
                 switch (command) {
                     case "getAllFoods":
-                        List<FoodsVO> foodsList = foodsDAO.getAllFoods();
-                        StringBuilder foodsInfo = new StringBuilder();
-                        for (FoodsVO food : foodsList) {
-                            foodsInfo.append(food.toString()).append("\n");
-                        }
-                        foodsInfo.append("end\n");
-                        out.println(foodsInfo.toString());
+                        String[] foodsList = foodsDAO.getAllFoods();
+                        out.println(String.join(",", foodsList)); // 음식 목록을 쉼표로 구분하여 클라이언트에 전송
                         break;
                     case "addFood":
                         if (tokens.length == 5) {

@@ -52,25 +52,18 @@ public class FoodsDAO {
         return result;
     }
 
-    public List<FoodsVO> getAllFoods() {
-        List<FoodsVO> foods = new ArrayList<>();
+    public String[] getAllFoods() {
+        List<String> foods = new ArrayList<>();
         String sql = "SELECT * FROM Food";
         try (Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                FoodsVO vo = new FoodsVO(
-                        rs.getInt("food_id"),
-                        rs.getString("food_category"),
-                        rs.getString("food_name"),
-                        rs.getString("food_description"),
-                        rs.getLong("food_price")
-                );
-                foods.add(vo);
+                foods.add(rs.getString("food_name")); // 음식 이름만 리스트에 추가
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return foods;
+        return foods.toArray(new String[0]); // 리스트를 배열로 변환하여 반환
     }
 
     public int updateFood(FoodsVO vo) {
