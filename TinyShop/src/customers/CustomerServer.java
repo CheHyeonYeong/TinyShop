@@ -15,7 +15,6 @@ public class CustomerServer {
         Socket clientSocket = null; // Socket 변수 초기화
         BufferedReader in = null; // BufferedReader 변수 초기화
         PrintWriter out = null; // PrintWriter 변수 초기화
-        Scanner sc = new Scanner(System.in); // Scanner 변수 초기화
         CustomerDAO dao = CustomerDAO.getInstance();
 
         try{ // try 문 시작
@@ -28,6 +27,8 @@ public class CustomerServer {
 
             while (true){ // 무한 루프 시작
                 String msg = in.readLine(); // 클라이언트로부터 문자열을 읽어옴
+                System.out.println(msg);
+
                 if(msg.equalsIgnoreCase("quit")){ // 만약 메시지가 "quit"이면
                     System.out.println("클라이언트에서 연결을 종료하였습니다"); // 클라이언트에서 연결 종료 메시지 출력
                     break; // 무한 루프 탈출

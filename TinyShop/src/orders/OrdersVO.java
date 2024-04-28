@@ -3,20 +3,16 @@ package orders;
 
 public class OrdersVO {
     private int orderId;
-    private int foodId;
     private String foodName;
     private String cusid;
-    private String cusname;
     private int quantity;
 
     public OrdersVO() {
     }
 
-    public OrdersVO(int foodId, String foodName, String cusid, String cusname, int quantity) {
-        this.foodId = foodId;
+    public OrdersVO( String foodName, String cusid, int quantity) {
         this.foodName = foodName;
         this.cusid = cusid;
-        this.cusname = cusname;
         this.quantity = quantity;
     }
 
@@ -26,14 +22,6 @@ public class OrdersVO {
 
     public void setOrderId(int orderId) {
         this.orderId = orderId;
-    }
-
-    public int getFoodId() {
-        return foodId;
-    }
-
-    public void setFoodId(int foodId) {
-        this.foodId = foodId;
     }
 
     public String getFoodName() {
@@ -52,14 +40,6 @@ public class OrdersVO {
         this.cusid = cusid;
     }
 
-    public String getCusname() {
-        return cusname;
-    }
-
-    public void setCusname(String cusname) {
-        this.cusname = cusname;
-    }
-
     public int getQuantity() {
         return quantity;
     }
@@ -70,7 +50,7 @@ public class OrdersVO {
 
     @Override
     public String toString() {
-        return "OrdersVO [orderId=" + orderId + ", foodId=" + foodId + ", foodName=" + foodName + ", cusid=" + cusid
-                + ", cusname=" + cusname + ", quantity=" + quantity + "]";
+        return "OrdersVO [orderId=" + orderId  + ", foodName=" + foodName
+                + ", cusid=" + cusid + ", quantity=" + quantity + "]";
     }
 }
