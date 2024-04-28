@@ -6,25 +6,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrdersDAO {
-    private static OrdersDAO instance;
-    private Connection conn;
+    private String url = "jdbc:mysql://localhost:3306/tinyshop";
+    private String user = "jdbc";
+    private String password = "jdbc";
 
-    private OrdersDAO() {
-        try {
-            // 데이터베이스 연결 정보
-            String url = "jdbc:mysql://localhost:3306/tinyshop";
-            String username = "jdbc";
-            String password = "jdbc";
-
-            // 데이터베이스 연결
-            conn = DriverManager.getConnection(url, username, password);
-
-            // orders 테이블 생성
-            createOrdersTable();
+    private Connection conn = null;
+    public OrdersDAO() {
+        String sql = "CREATE TABLE IF NOT EXISTS Food (" +
+                "food_id INT AUTO_INCREMENT PRIMARY KEY," +
+                "food_category VARCHAR(255) NOT NULL," +
+                "food_name VARCHAR(255) NOT NULL," +
+                "food_description TEXT," +
+                "food_price BIGINT NOT NULL" +
+                ")";
+        try (Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Food 테이블이 생성되었습니다.");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
+
+
 
     public static OrdersDAO getInstance() {
         if (instance == null) {
