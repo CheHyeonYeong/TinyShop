@@ -97,8 +97,6 @@ public class OrdersServer {
                             out.println("유효하지 않은 명령입니다.");
                             break;
                     }
-                } catch (SQLException e) {
-                    out.println("데이터베이스 오류가 발생했습니다: " + e.getMessage());
                 } catch (ArrayIndexOutOfBoundsException e) {
                     out.println("유효하지 않은 요청 형식입니다.");
                 } catch (NumberFormatException e) {
@@ -110,7 +108,7 @@ public class OrdersServer {
             clientSocket.close();
             serverSocket.close();
             ordersDAO.closeConnection();
-        } catch (IOException | SQLException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

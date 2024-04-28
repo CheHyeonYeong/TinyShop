@@ -82,6 +82,22 @@ public class OrdersDAO {
             return false;
         }
     }
+    public boolean insertOrder(OrdersVO order) {
+        String sql = "INSERT INTO orders (food_id, food_name, cusid, cusname, quantity) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, order.getFoodId());
+            stmt.setString(2, order.getFoodName());
+            stmt.setString(3, order.getCusid());
+            stmt.setString(4, order.getCusname());
+            stmt.setInt(5, order.getQuantity());
+
+            int rowsInserted = stmt.executeUpdate();
+            return rowsInserted > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     private void closeResources(Statement stmt, ResultSet rs) {
         try {
