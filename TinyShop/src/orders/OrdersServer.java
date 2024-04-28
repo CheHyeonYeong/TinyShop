@@ -18,12 +18,13 @@ public class OrdersServer {
         try {
             OrdersDAO ordersDAO = new OrdersDAO();
 
-            serverSocket = new ServerSocket(3018);
+            serverSocket = new ServerSocket(3020);
             System.out.println("연결을 기다리고 있습니다");
             clientSocket = serverSocket.accept();
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             System.out.println("클라이언트와 연결 성공");
+
 
             while (true) {
                 String msg = in.readLine();
@@ -37,7 +38,7 @@ public class OrdersServer {
                 try {
                     switch (command) {
                         case "placeOrder":
-                            if (request.length != 6) {
+                            if (request.length != 4) {
                                 out.println("유효하지 않은 주문 정보입니다.");
                                 break;
                             }
@@ -63,13 +64,13 @@ public class OrdersServer {
                             }
                             break;
                         case "updateOrder":
-                            if (request.length != 4) {
+                            if (request.length != 3) {
                                 out.println("유효하지 않은 주문 정보입니다.");
                                 break;
                             }
+
                             int updateOrderId = Integer.parseInt(request[1]);
-                            String updateFoodName = request[2];
-                            int updateQuantity = Integer.parseInt(request[3]);
+                            int updateQuantity = Integer.parseInt(request[2]);
                             boolean updateResult = ordersDAO.updateOrderQuantity(updateOrderId, updateQuantity);
                             if (updateResult) {
                                 out.println("주문이 성공적으로 수정되었습니다.");
@@ -112,12 +113,10 @@ public class OrdersServer {
 
     private static OrdersVO parseOrder(String msg) {
         String[] orderInfo = msg.split(",");
-        int foodId = Integer.parseInt(orderInfo[1]);
-        String foodName = orderInfo[2];
-        String cusid = orderInfo[3];
-        String cusname = orderInfo[4];
-        int quantity = Integer.parseInt(orderInfo[5]);
+        String foodName = orderInfo[1];
+        String cusid = orderInfo[2];
+        int quantity = Integer.parseInt(orderInfo[3]);
 
-        return new OrdersVO(foodId, foodName, cusid, cusname, quantity);
+        return new OrdersVO(foodName, cusid, quantity);
     }
 }

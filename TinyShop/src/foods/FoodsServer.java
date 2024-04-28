@@ -17,7 +17,7 @@ public class FoodsServer {
         FoodsDAO foodsDAO = new FoodsDAO();
 
         try {
-            serverSocket = new ServerSocket(3018);
+            serverSocket = new ServerSocket(3019);
             System.out.println("연결을 기다리고 있습니다.");
             clientSocket = serverSocket.accept();
             out = new PrintWriter(clientSocket.getOutputStream(), true);

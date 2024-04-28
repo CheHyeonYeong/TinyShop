@@ -26,10 +26,8 @@ public class OrdersDAO {
     private void createOrdersTable() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS orders (" +
                 "order_id INT AUTO_INCREMENT PRIMARY KEY," +
-                "food_id INT," +
                 "food_name VARCHAR(255)," +
-                "cusid VARCHAR(255)," +
-                "cusname VARCHAR(255)," +
+                "cusid VARCHAR(255),"+
                 "quantity INT" +
                 ")";
         try (Statement stmt = conn.createStatement()) {
@@ -45,11 +43,9 @@ public class OrdersDAO {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 int orderId = rs.getInt("order_id");
-                int foodId = rs.getInt("food_id");
                 String foodName = rs.getString("food_name");
-                String cusName = rs.getString("cusname");
                 int quantity = rs.getInt("quantity");
-                OrdersVO order = new OrdersVO(foodId, foodName, customerId, cusName, quantity);
+                OrdersVO order = new OrdersVO( foodName, customerId, quantity);
                 orders.add(order);
             }
             closeResources(stmt, rs);
@@ -83,13 +79,12 @@ public class OrdersDAO {
         }
     }
     public boolean insertOrder(OrdersVO order) {
-        String sql = "INSERT INTO orders (food_id, food_name, cusid, cusname, quantity) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO orders (food_name, cusid, quantity) VALUES (?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, order.getFoodId());
-            stmt.setString(2, order.getFoodName());
-            stmt.setString(3, order.getCusid());
-            stmt.setString(4, order.getCusname());
-            stmt.setInt(5, order.getQuantity());
+
+            stmt.setString(1, order.getFoodName());
+            stmt.setString(2, order.getCusid());
+            stmt.setInt(3, order.getQuantity());
 
             int rowsInserted = stmt.executeUpdate();
             return rowsInserted > 0;
