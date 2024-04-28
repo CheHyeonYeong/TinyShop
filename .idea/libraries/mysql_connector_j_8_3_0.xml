@@ -1,7 +1,7 @@
 <component name="libraryTable">
   <library name="mysql-connector-j-8.3.0">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../jarfile/mysql-connector-j-8.3.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/TinyShop/src/orders/mysql-connector-j-8.3.0.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

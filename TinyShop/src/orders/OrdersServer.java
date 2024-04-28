@@ -6,9 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.SQLException;
 import java.util.List;
-import java.util.UUID;
 
 public class OrdersServer {
     public static void main(String[] args) {
@@ -18,7 +16,6 @@ public class OrdersServer {
         PrintWriter out = null;
 
         try {
-            // OrdersDAO 인스턴스 가져오기
             OrdersDAO ordersDAO = new OrdersDAO();
 
             serverSocket = new ServerSocket(3018);
