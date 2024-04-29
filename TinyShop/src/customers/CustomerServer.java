@@ -98,9 +98,28 @@ public class CustomerServer {
                         dao.delete(deleteId);
                         out.println("회원 정보가 삭제되었습니다.");
                         break;
+                    // CustomerServer.java
+                    case "login":
+                        String adminId = tokens[1];
+                        String adminPw = tokens[2];
+                        if (adminId.equals("adminid") && adminPw.equals("adminpw")) {
+                            out.println("관리자로 로그인되었습니다");
+                        } else {
+                            boolean loginSuccess = dao.checkUserExists(adminId, adminPw);
+                            if (loginSuccess) {
+                                out.println("로그인에 성공했습니다");
+                            } else {
+                                out.println("로그인에 실패했습니다");
+                            }
+                        }
+                        break;
+
+
+
                     default:
                         out.println("잘못된 명령입니다.");
                         break;
+
                 }
 
                 out.flush(); // 버퍼 비우기

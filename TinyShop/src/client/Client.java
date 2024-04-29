@@ -50,6 +50,20 @@ public class Client {
     public void login() throws IOException {
         buffetOpen(3018);
 
+        System.out.println("로그인을 진행합니다");
+
+        System.out.println("id를 입력하세요");
+        String id = sc.nextLine();
+        System.out.println("pw를 입력하세요");
+        String pw = sc.nextLine();
+
+        token = String.format("login,%s,%s", id, pw);
+        out.println(token); // 서버로 token 전송
+        out.flush(); // 버퍼 비우기
+
+        String response = in.readLine(); // 서버로부터 응답 받기
+        System.out.println(response); // 서버로부터 받은 응답 출력
+
         bufferClose();
     }
 
